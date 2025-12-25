@@ -12,13 +12,13 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  PaymentMethod? selectedMethod;
+  PaymentMethod? selectedMethod; //dong goi
 
   final List<PaymentMethod> methods = [
     PaypalPayment(),
     GooglePayPayment(),
     ApplePayPayment(),
-  ];
+  ]; //da hinh
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.blue.withOpacity(0.05),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
