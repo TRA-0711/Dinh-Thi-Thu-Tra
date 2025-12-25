@@ -4,141 +4,101 @@ void main() {
   runApp(const MyApp());
 }
 
-/// App gốc
+/// =====================
+/// APP CHÍNH
+/// =====================
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: NullableDemoScreen(),
+      title: 'Nullable Demo',
+      home: const UserScreen(),
     );
   }
 }
 
-/// Màn hình minh họa Nullable
-class NullableDemoScreen extends StatefulWidget {
-  const NullableDemoScreen({super.key});
+/// =====================
+/// MODEL: USER
+/// =====================
+class User {
+  String name;        // non-nullable
+  int? age;           // nullable
+  String? email;      // nullable
 
-  @override
-  State<NullableDemoScreen> createState() => _NullableDemoScreenState();
+  User({
+    required this.name,
+    this.age,
+    this.email,
+  });
 }
 
-class _NullableDemoScreenState extends State<NullableDemoScreen> {
-  // 1️⃣ Biến nullable
-  String? nullableName;
-
-  // 2️⃣ Biến non-nullable
-  String nonNullableName = "Flutter";
-
-  // 3️⃣ Controller nullable
-  TextEditingController? controller;
-
-  // 4️⃣ List nullable
-  List<String?> names = ["An", null, "Bình"];
-
-  @override
-  void initState() {
-    super.initState();
-    controller = TextEditingController();
-  }
+/// =====================
+/// SCREEN
+/// =====================
+class UserScreen extends StatelessWidget {
+  const UserScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Danh sách user (có và không có dữ liệu)
+    List<User> users = [
+      User(name: 'An', age: 20, email: 'an@gmail.com'),
+      User(name: 'Bình'), // age & email = null
+      User(name: 'Chi', age: 22),
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Nullable Demo"),
-        backgroundColor: Colors.blue,
+        title: const Text('Demo Nullable'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// 🔹 Nullable variable
-            Text(
-              "1. String? nullableName = ${nullableName ?? "null"}",
-              style: const TextStyle(fontSize: 16),
-            ),
+      body: ListView.builder(
+        itemCount: users.length,
+        itemBuilder: (context, index) {
+          User user = users[index];
 
-            const SizedBox(height: 10),
+          return Card(
+            margin: const EdgeInsets.all(8),
+            child: ListTile(
+              title: Text(user.name),
 
-            /// 🔹 Null coalescing ??
-            Text(
-              "2. nullableName ?? 'Default' = ${nullableName ?? "Default"}",
-              style: const TextStyle(fontSize: 16),
-            ),
+              // ?? → giá trị mặc định khi null
+              subtitle: Text(
+                'Tuổi: ${user.age ?? "Chưa cập nhật"}\n'
+                    'Email: ${user.email ?? "Chưa có email"}',
+              ),
 
-            const SizedBox(height: 10),
-
-            /// 🔹 Safe call ?.
-            Text(
-              "3. nullableName?.length = ${nullableName?.length}",
-              style: const TextStyle(fontSize: 16),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 TextField nullable
-            TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                labelText: "Nhập tên (nullable)",
-                border: OutlineInputBorder(),
+              // Demo toán tử !
+              trailing: IconButton(
+                icon: const Icon(Icons.info),
+                onPressed: () {
+                  showUserAge(context, user.age);
+                },
               ),
             ),
-
-            const SizedBox(height: 10),
-
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  nullableName = controller?.text;
-                });
-              },
-              child: const Text("Gán vào nullableName"),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 Force unwrap !
-            Text(
-              "4. Dùng ! (chỉ khi chắc chắn không null):",
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              nullableName != null
-                  ? "nullableName!.length = ${nullableName!.length}"
-                  : "nullableName đang null ❌",
-              style: const TextStyle(fontSize: 16),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 Nullable trong List
-            const Text(
-              "5. List<String?>:",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: names.map((e) {
-                return Text("• ${e ?? "null"}");
-              }).toList(),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 So sánh nullable vs non-nullable
-            Text(
-              "6. Non-nullable luôn có giá trị: $nonNullableName",
-              style: const TextStyle(fontSize: 16, color: Colors.green),
-            ),
-          ],
-        ),
+          );
+        },
       ),
+    );
+  }
+
+  /// =====================
+  /// DEMO TOÁN TỬ !
+  /// =====================
+  void showUserAge(BuildContext context, int? age) {
+    String message;
+
+    if (age != null) {
+      // age! → cam kết không null
+      message = 'Tuổi người dùng là ${age!}';
+    } else {
+      message = 'Người dùng chưa cập nhật tuổi';
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 }
